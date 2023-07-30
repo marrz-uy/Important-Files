@@ -1,0 +1,23 @@
+#
+# Shorewall -- /etc/shorewall/policy
+#
+# For information about entries in this file, type "man shorewall-policy"
+#
+# The manpage is also online at
+# http://www.shorewall.net/manpages/shorewall-policy.html
+#
+###############################################################################
+#SOURCE		DEST		POLICY	LOGLEVEL	RATE	CONNLIMIT
+
+#firewall system to have full access to servers on the Internet
+$FW		all		ACCEPT
+
+#allow all connection requests from your local network to the Internet
+loc		all		ACCEPT
+
+#drop (ignore) all connection requests from the Internet to your firewall or local network
+net		all		DROP	$LOG_LEVEL
+
+#reject all other connection requests
+all		all		REJECT	$LOG_LEVEL
+

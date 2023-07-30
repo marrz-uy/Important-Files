@@ -1,0 +1,113 @@
+#
+# Shorewall -- /etc/shorewall/rules
+#
+# For information on the settings in this file, type "man shorewall-rules"
+#
+# The manpage is also online at
+# http://www.shorewall.net/manpages/shorewall-rules.html
+#
+##############################################################################################################################################################
+#ACTION		SOURCE		DEST		PROTO	DPORT	SPORT	ORIGDEST	RATE	USER	MARK	CONNLIMIT	TIME	HEADERS	SWITCH	HELPER
+
+?SECTION ALL
+?SECTION ESTABLISHED
+?SECTION RELATED
+?SECTION INVALID
+?SECTION UNTRACKED
+?SECTION NEW
+
+
+#	Don't allow connection pickup from the net
+#
+Invalid(DROP)   net             all             tcp
+#
+#	Accept DNS connections from the firewall to the Internet
+#
+DNS(ACCEPT)     $FW             net
+#
+#
+#	Accept SSH connections from the firewall to the DMZ and loc
+#
+SSH(ACCEPT)	$FW		dmz
+SSH(ACCEPT)	$FW		loc
+#
+#	Accept SSH connections from the local network to the firewall and DMZ
+#
+SSH(ACCEPT)     loc             $FW
+SSH(ACCEPT)     loc             dmz
+#
+#	DMZ DNS access to the Internet
+#
+DNS(ACCEPT)     dmz             net
+#	Accept SSH connections from the DMZ to the loc for backup
+SSH(ACCEPT)     dmz		loc:192.168.4.40
+
+
+# Drop Ping from the "bad" net zone.
+
+Ping(DROP)	net             $FW
+
+#
+#	Make ping work bi-directionally between the dmz, net, Firewall and local zone
+#	(assumes that the loc-> net policy is ACCEPT).
+#
+Ping(ACCEPT)    loc             $FW
+Ping(ACCEPT)    loc             dmz
+Ping(ACCEPT)	dmz		$FW
+Ping(ACCEPT)    dmz             net
+Ping(ACCEPT)	dmz		loc
+
+ACCEPT          $FW             net             icmp
+ACCEPT          $FW             loc             icmp
+ACCEPT          $FW             dmz             icmp
+
+
+ACCEPT		loc	net	tcp	80
+ACCEPT		loc	net	tcp	443
+ACCEPT		loc	net	tcp	53
+ACCEPT		loc	net	udp	53
+
+# Poder ingresar al puerto 80 del servidor web desde loc via web
+ACCEPT		loc	dmz	tcp	80
+
+# Poder ingresar al puerto 80 del servidor web desde net via web
+DNAT		net	dmz:192.168.3.3:80	tcp	80
+DNAT 		net	dmz:192.168.3.3:3000	tcp	3000
+
+# Reglas para poder actualizar equipos en DMZ (ACTIVAR SOLO PARA ACTUALIZAR)
+#ACCEPT		dmz	net 	tcp	80
+#ACCEPT		dmz	net	tcp	443
+#ACCEPT	        dmz	net	tcp	53
+#ACCEPT	        dmz	net	udp	53
+#ACCEPT		dmz	net	tcp	3000
+#ACCEPT          loc     net     tcp     443
+#ACCEPT          loc     net     tcp     53
+#ACCEPT          loc     net     tcp     80
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
